@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-node-vuln
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-node-vuln
+  template:
+    metadata:
+      labels:
+        app: hello-node-vuln
+    spec:
+      containers:
+      - name: hello-node-vuln
+        image: jawalker89/hello-node-vuln:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000

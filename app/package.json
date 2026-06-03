@@ -1,0 +1,14 @@
+{
+  "name": "hello-node-vuln-app",
+  "version": "1.0.0",
+  "description": "Deliberately vulnerable Node.js app for DevSecOps demo",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "4.16.0",
+    "lodash": "4.17.15",
+    "axios": "0.21.0"
+  }
+}
