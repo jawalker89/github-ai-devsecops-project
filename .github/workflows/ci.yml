@@ -62,4 +62,74 @@ jobs:
 
       - name: Run remediation agent
         run: |
-          python automation/remediation_agent.py ./reports/trivy-results.json          
+          python automation/remediation_agent.py ./reports/trivy-results.json
+          
+      - name: Upload remediated package files
+        uses: actions/upload-artifact@v4
+        with:
+          name: remediated-app
+          path: |
+            app/package.json
+            app/package-lock.json
+            
+  rescan:
+    needs: ai-remediation
+    runs-on: ubuntu-latest   
+  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download remediated files
+        uses: actions/download-artifact@v4
+        with:
+          name: remediated-app
+          path: .
+
+      - name: Rebuild Docker image
+        run: |
+          docker build -t hello-node-vuln-remediated .
+          
+      - name: Run Trivy Re-Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: hello-node-vuln-remediated
+          format: json
+          output: trivy-results-after.json
+          
+      - name: Upload Re-Scan Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report-after
+          path: trivy-results-after.json 
+          
+  compare:
+    needs:
+      - security-scan
+      - rescan
+    runs-on: ubuntu-latest   
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"  
+
+      - name: Download original report
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-report
+          path: reports
+
+      - name: Download remediated report
+        uses: actions/download-artifact@v4
+        with:
+          name: trivy-report-after
+          path: reports
+
+      - name: Compare reports
+        run: |
+          python automation/compare_reports.py    

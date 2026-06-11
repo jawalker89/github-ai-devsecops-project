@@ -218,6 +218,23 @@ def update_npm_package(
         check=True
     )
 
+def verify_with_npm_audit(
+    app_directory
+):
+
+    print(
+        "\n=== Running npm audit ===\n"
+    )
+
+    subprocess.run(
+        [
+            npm_executable,
+            "audit"
+        ],
+        cwd=app_directory,
+        check=False
+    )    
+
 
 def apply_remediation(
     plan,
@@ -285,6 +302,11 @@ def main():
     apply_remediation(
         remediation_plan,
         app_directory
+    )
+
+    verify_with_npm_audit(
+    app_directory
+    
     )
 
     print(
