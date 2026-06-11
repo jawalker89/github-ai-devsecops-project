@@ -62,4 +62,4 @@ jobs:
 
       - name: Run remediation agent
         run: |
-          python automation/remediation_agent.py          
+          python automation/remediation_agent.py /reports/trivy-results.json          
